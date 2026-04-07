@@ -2,17 +2,13 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import Category from '../models/category.model.js'
-import {add, update, deleteOne} from './handlerFactory.js'
+import {add, get, update, deleteOne} from './handlerFactory.js'
 //const slugify = require('slugify)
 
 // const category = await Category.create({ ...req.body }) //mch 3aref a catch l error eli gay mn async await
 const addCategory = add(Category)
-
-const getCategories = async (req: express.Request, res: express.Response) => {// ki ndir res.send mana7tajech next function
-    //try w catch hiya li t5alina ntal3ou l error ll user
-    const categories = await Category.find({})
-    return res.status(StatusCodes.OK).json({ results: categories.length, data: categories })
-}
+// ki ndir res.send mana7tajech next function
+const getCategories = get(Category)
 
 const updateCategory = update(Category)
 

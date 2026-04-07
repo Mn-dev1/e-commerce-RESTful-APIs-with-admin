@@ -7,6 +7,11 @@ const add = (model: Model<any>) => async (req: express.Request, res: express.Res
     return res.status(StatusCodes.CREATED).json(`${model.modelName} ajoutée`)
 }
 
+const get = (model: Model<any>) => async (req: express.Request, res: express.Response) => {
+    const document = await model.find({})
+    return res.status(StatusCodes.OK).json({ results: document.length, data: document })
+}
+
 const update = (model: Model<any>) => async (req: express.Request, res: express.Response) => {
     const document = await model.findByIdAndUpdate(req.params.id, req.body)
     if (!document)
@@ -20,4 +25,4 @@ const deleteOne = (model: Model<any>) => async (req: express.Request, res: expre
         return res.status(StatusCodes.NOT_FOUND).json(`no ${model.modelName}`)
     return res.status(StatusCodes.NO_CONTENT).json(`${model.modelName} supprimée`)// mayaafichich l msg hna 
 }
-export { add, update, deleteOne }
+export { add, get, update, deleteOne }

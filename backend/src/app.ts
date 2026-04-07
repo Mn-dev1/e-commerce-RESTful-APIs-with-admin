@@ -11,6 +11,7 @@ import connectDB from './db/connect.js'
 import CustomError from './errors/CustomError.js'
 import productRouter from './routes/product.routes.js'
 import categoryRouter from './routes/category.routes.js'
+import adminRouter from './routes/admin.routes.js'
 
 const app = express() 
 
@@ -29,6 +30,7 @@ if(process.env.NODE_ENV === 'development') // w kayen staging mode ki tala3 code
 //mount routes
 app.use('/api/v1/categories', categoryRouter) //route ghir l admin li yo5rojlou + client fel home yorjoulou les categories li kaynin
 app.use('/api/v1/products', productRouter)
+app.use('/api/v1/admins', adminRouter)
 
 app.all('*splat', (req, res, next) => {
     next(new CustomError(`route ${req.url} not found`, 404))
