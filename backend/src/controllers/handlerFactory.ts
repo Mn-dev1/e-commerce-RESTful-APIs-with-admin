@@ -8,7 +8,7 @@ const add = (model: Model<any>) => async (req: express.Request, res: express.Res
 }
 
 const get = (model: Model<any>) => async (req: express.Request, res: express.Response) => {
-    const document = await model.find({})
+    const document = await model.find({}).select('-password -_id -createdAt -updatedAt -__v')
     return res.status(StatusCodes.OK).json({ results: document.length, data: document })
 }
 

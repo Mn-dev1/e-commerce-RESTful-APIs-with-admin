@@ -3,14 +3,15 @@ dotenv.config()
 import express from "express"
 import jwt from "jsonwebtoken"
 import { StatusCodes } from "http-status-codes"
+import { Role } from '../utils/roles.js'
 
-const auth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const authenticate = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader) return res.sendStatus(StatusCodes.UNAUTHORIZED)
 
     const accessToken = authHeader?.split(' ')[1];
     if (!accessToken) return res.sendStatus(StatusCodes.UNAUTHORIZED);
-    
+
 
     jwt.verify(accessToken, process.env.JWT_SECRET as string, (err, admin) => {
         if (err) return res.sendStatus(StatusCodes.UNAUTHORIZED);
@@ -19,5 +20,12 @@ const auth = (req: express.Request, res: express.Response, next: express.NextFun
     });
 }
 
+const authorize = (...allowedRoles: Role[]) => {
+    return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (allowedRoles.includes(req.admin.role)) next()
+        else return res.sendStatus(StatusCodes.FORBIDDEN)
+    }
+}
 
-export default auth
+
+export { authenticate, authorize }

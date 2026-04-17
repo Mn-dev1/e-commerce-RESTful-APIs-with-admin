@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 import dotenv from 'dotenv'
 import refreshTokens from "../models/refresh.Token.js";
 dotenv.config()
+import type { StringValue } from 'ms';
 
 const register = async (req: express.Request, res: express.Response) => {
     const salt = await bcrypt.genSalt(10)
@@ -13,7 +14,8 @@ const register = async (req: express.Request, res: express.Response) => {
     const admin = Admin.create({
         username: req.body.username,
         email: req.body.email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: req.body.role
     })
     res.status(StatusCodes.CREATED).json(`admin créé`)
 }
@@ -29,8 +31,16 @@ const login = async (req: express.Request, res: express.Response) => {
     if (admin) {
         const passwordCheck = await bcrypt.compare(req.body.password, admin.password)
         if (passwordCheck) {
-            const accessToken = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET as string, { expiresIn: "30s" })
-            const refreshToken = jwt.sign({ adminId: admin._id }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: "7d" })
+            const accessToken = jwt.sign(
+                { adminId: admin._id, role: admin.role },
+                process.env.JWT_SECRET as string,
+                { expiresIn: process.env.ACCESS_TOKEN_EXPIRESIN as StringValue })
+
+            const refreshToken = jwt.sign(
+                { adminId: admin._id }, 
+                process.env.JWT_REFRESH_SECRET as string, 
+                { expiresIn: process.env.ACCESS_REFRESH_EXPIRESIN as StringValue })
+
             await refreshTokens.create({ userId: admin._id, token: refreshToken })
 
             res.cookie('refreshToken', refreshToken, {
@@ -64,16 +74,16 @@ const refresh = async (req: express.Request, res: express.Response) => {
                 const accessToken = jwt.sign(
                     { id: decoded.id },
                     process.env.JWT_SECRET as string,
-                    { expiresIn: '30s' }
+                    { expiresIn: process.env.ACCESS_TOKEN_EXPIRESIN as StringValue }
                 );
 
                 //rotate refresh token
                 const newRefreshToken = jwt.sign(
                     { id: decoded.id },
                     process.env.JWT_REFRESH_SECRET as string,
-                    { expiresIn: '7d' }
+                    { expiresIn: process.env.ACCESS_REFRESH_EXPIRESIN as StringValue }
                 );
-                await refreshTokens.deleteOne({token: token})
+                await refreshTokens.deleteOne({ token: token })
                 await refreshTokens.create({ userId: decoded.id, token: newRefreshToken })
 
                 res.cookie('refreshToken', newRefreshToken, {

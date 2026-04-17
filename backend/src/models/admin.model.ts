@@ -1,5 +1,6 @@
-import {Schema, model} from 'mongoose'
+import { Schema, model } from 'mongoose'
 import validator from "email-validator"
+import {Role} from "../utils/roles.js"
 
 const adminSchema = new Schema({
     username: {
@@ -23,6 +24,11 @@ const adminSchema = new Schema({
         type: Schema.Types.String,
         minlength: 8,
         required: [true, "le mot de passe est obligatoire"]
+    },
+    role: {
+        type: Schema.Types.String,
+        enum: Role,
+        default: Role.ADMIN
     }
     
 }, {
