@@ -1,6 +1,7 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
 import validator from "email-validator"
-import {Role} from "../utils/roles.js"
+import { Role } from "../utils/roles.js"
+import bcrypt from "bcrypt"
 
 const adminSchema = new Schema({
     username: {
@@ -30,10 +31,18 @@ const adminSchema = new Schema({
         enum: Role,
         default: Role.ADMIN
     }
-    
+
 }, {
     timestamps: true
 })
+
+adminSchema.pre("save", async function () {
+    if (this.isModified("password")) {
+        const salt = await bcrypt.genSalt(10)
+        this.password = await bcrypt.hash(this.password, salt)
+    }
+})
+
 
 const Admin = model('Admin', adminSchema)
 //write actions, they gonna be used in controllers, it is a practice to keep them abstracted

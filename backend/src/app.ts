@@ -14,6 +14,7 @@ import categoryRouter from './routes/category.routes.js'
 import adminRouter from './routes/admin.routes.js'
 import authRouter from './routes/auth.routes.js'
 
+
 const app = express() 
 
 //middleware before routes 
@@ -35,6 +36,7 @@ app.use('/api/v1/products', productRouter)
 app.use('/api/v1/admins', adminRouter)
 app.use('/api/v1/auth', authRouter)
 
+
 app.all('*splat', (req, res, next) => {
     next(new CustomError(`route ${req.url} not found`, 404))
 })
@@ -43,7 +45,9 @@ app.use(errorHandlerMiddleware)
 
 try {
     await connectDB(process.env.MONGO_URI as string)
-    const server = app.listen(process.env.PORT, () => console.log(`server running on http://localhost:${process.env.PORT}/`))
+    const server = app.listen(process.env.PORT, () => {
+        console.log(`server running on http://localhost:${process.env.PORT}/`)
+    })
 
     // hadi ji bara try, nrigel format ta3 l msg w n5alih yetla3 ll user mch fel console w server maya7besch bech ki nbedel mana7tajech ndir restart l server
     process.on('unhandledRejection', (err: Error) => {

@@ -9,12 +9,10 @@ dotenv.config()
 import type { StringValue } from 'ms';
 
 const register = async (req: express.Request, res: express.Response) => {
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(req.body.password, salt)
     const admin = Admin.create({
         username: req.body.username,
         email: req.body.email,
-        password: hashedPassword,
+        password: req.body.password,
         role: req.body.role
     })
     res.status(StatusCodes.CREATED).json(`admin créé`)
@@ -32,14 +30,14 @@ const login = async (req: express.Request, res: express.Response) => {
         const passwordCheck = await bcrypt.compare(req.body.password, admin.password)
         if (passwordCheck) {
             const accessToken = jwt.sign(
-                { adminId: admin._id, role: admin.role },
+                { userId: admin._id, role: admin.role },
                 process.env.JWT_SECRET as string,
                 { expiresIn: process.env.ACCESS_TOKEN_EXPIRESIN as StringValue })
 
             const refreshToken = jwt.sign(
-                { adminId: admin._id }, 
-                process.env.JWT_REFRESH_SECRET as string, 
-                { expiresIn: process.env.ACCESS_REFRESH_EXPIRESIN as StringValue })
+                { userId: admin._id },
+                process.env.JWT_REFRESH_SECRET as string,
+                { expiresIn: process.env.REFRESH_TOKEN_EXPIRESIN as StringValue })
 
             await refreshTokens.create({ userId: admin._id, token: refreshToken })
 
@@ -58,18 +56,19 @@ const login = async (req: express.Request, res: express.Response) => {
 }
 
 const refresh = async (req: express.Request, res: express.Response) => {
-    const token = req.cookies['refreshToken']; //hadek joiful nerja3 lih nhez mn la methode li yekteb biha l code w error handlers w turki aussi + implements frontend
+    const token = req.cookies['refreshToken']; //joiful nerja3 lih nhez mn la methode li yekteb biha l code w error handlers w turki aussi + implements frontend
+    const expiredAccess = req.headers["authorization"]?.split(' ')[1]
 
-    if (!token) return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    if (!token || !expiredAccess) return res.sendStatus(StatusCodes.UNAUTHORIZED);
     else {
-
-
         try {
             const refreshToken = await refreshTokens.findOne({ token: token })
             if (!refreshToken) return res.sendStatus(StatusCodes.UNAUTHORIZED);
             else {
+                const expiredAccessToken = jwt.verify(expiredAccess, process.env.JWT_SECRET as string, { ignoreExpiration: true }) as jwt.JwtPayload;
                 const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as jwt.JwtPayload;
-
+                if (expiredAccessToken.id !== decoded.id) return res.sendStatus(StatusCodes.UNAUTHORIZED)
+                
                 // new access token
                 const accessToken = jwt.sign(
                     { id: decoded.id },
@@ -81,7 +80,7 @@ const refresh = async (req: express.Request, res: express.Response) => {
                 const newRefreshToken = jwt.sign(
                     { id: decoded.id },
                     process.env.JWT_REFRESH_SECRET as string,
-                    { expiresIn: process.env.ACCESS_REFRESH_EXPIRESIN as StringValue }
+                    { expiresIn: process.env.REFRESH_TOKEN_EXPIRESIN as StringValue }
                 );
                 await refreshTokens.deleteOne({ token: token })
                 await refreshTokens.create({ userId: decoded.id, token: newRefreshToken })
@@ -94,18 +93,19 @@ const refresh = async (req: express.Request, res: express.Response) => {
                     maxAge: 7 * 24 * 60 * 60 * 1000,
                 });
 
-                return res.status(StatusCodes.OK).setHeader('Authorization', `Bearer ${accessToken}`).json('access')
+                return res.status(StatusCodes.OK).setHeader('Authorization', `Bearer ${accessToken}`).json('success')
             }
 
         } catch (err) {
-            return res.sendStatus(StatusCodes.UNAUTHORIZED); // expired or tampered
+            return res.sendStatus(StatusCodes.UNAUTHORIZED);
         }
     }
 };
 
 const logout = async (req: express.Request, res: express.Response) => {
     res.clearCookie('refreshToken', { path: '/api/v1/auth/refresh' });
-    return res.sendStatus(StatusCodes.OK);
+    await refreshTokens.deleteOne({ userId: req.user.userId })
+    return res.sendStatus(StatusCodes.NO_CONTENT);
 }
 
 export { register, login, refresh, logout }
