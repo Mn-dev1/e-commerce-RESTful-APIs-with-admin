@@ -4,6 +4,7 @@ import validator from "email-validator"
 const clientSchema = new Schema({
     nom: {
         type: Schema.Types.String,
+        trim: true,
         minlength: 3,
         required: [true, "le nom et prénom sont obligatoires"],
         maxlength: 100

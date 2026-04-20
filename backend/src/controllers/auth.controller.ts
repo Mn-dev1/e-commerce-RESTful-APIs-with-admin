@@ -1,7 +1,6 @@
 import express from "express"
 import { StatusCodes } from "http-status-codes";
 import Admin from "../models/admin.model.js";
-import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import dotenv from 'dotenv'
 import refreshTokens from "../models/refresh.Token.js";
@@ -27,17 +26,11 @@ const login = async (req: express.Request, res: express.Response) => {
     }
     const admin = await Admin.findOne(query)
     if (admin) {
-        const passwordCheck = await bcrypt.compare(req.body.password, admin.password)
+        const passwordCheck = await admin.checkPassword(req.body.password)
         if (passwordCheck) {
-            const accessToken = jwt.sign(
-                { userId: admin._id, role: admin.role },
-                process.env.JWT_SECRET as string,
-                { expiresIn: process.env.ACCESS_TOKEN_EXPIRESIN as StringValue })
+            const accessToken = admin.createAccessToken()
 
-            const refreshToken = jwt.sign(
-                { userId: admin._id },
-                process.env.JWT_REFRESH_SECRET as string,
-                { expiresIn: process.env.REFRESH_TOKEN_EXPIRESIN as StringValue })
+            const refreshToken = admin.createRefreshToken()
 
             await refreshTokens.create({ userId: admin._id, token: refreshToken })
 
@@ -46,7 +39,7 @@ const login = async (req: express.Request, res: express.Response) => {
                 secure: true,       // Only sent over HTTPS
                 sameSite: 'strict', // Prevents CSRF attacks
                 path: '/api/v1/auth/refresh',
-                maxAge: 7 * 24 * 60 * 60 * 1000, //whats that ????????????
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
             }).setHeader('Authorization', `Bearer ${accessToken}`).json(`welcome`)
 
 
@@ -59,15 +52,15 @@ const refresh = async (req: express.Request, res: express.Response) => {
     const token = req.cookies['refreshToken']; //joiful nerja3 lih nhez mn la methode li yekteb biha l code w error handlers w turki aussi + implements frontend
     const expiredAccess = req.headers["authorization"]?.split(' ')[1]
 
-    if (!token || !expiredAccess) return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    if (!token || !expiredAccess) return res.status(StatusCodes.UNAUTHORIZED);
     else {
         try {
             const refreshToken = await refreshTokens.findOne({ token: token })
-            if (!refreshToken) return res.sendStatus(StatusCodes.UNAUTHORIZED);
+            if (!refreshToken) return res.status(StatusCodes.UNAUTHORIZED)
             else {
                 const expiredAccessToken = jwt.verify(expiredAccess, process.env.JWT_SECRET as string, { ignoreExpiration: true }) as jwt.JwtPayload;
                 const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as jwt.JwtPayload;
-                if (expiredAccessToken.id !== decoded.id) return res.sendStatus(StatusCodes.UNAUTHORIZED)
+                if (expiredAccessToken.id !== decoded.id) return res.status(StatusCodes.UNAUTHORIZED);
                 
                 // new access token
                 const accessToken = jwt.sign(
@@ -97,7 +90,7 @@ const refresh = async (req: express.Request, res: express.Response) => {
             }
 
         } catch (err) {
-            return res.sendStatus(StatusCodes.UNAUTHORIZED);
+            return res.status(StatusCodes.UNAUTHORIZED);
         }
     }
 };

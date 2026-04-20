@@ -3,7 +3,7 @@ import validatorMiddleware from '../../middlewares/validatorMiddleware.js'
 import Category from '../../models/category.model.js'
 
 const addProductValidator = [
-    check('designation').notEmpty().withMessage("la designation de produit est obligatoire").isLength({max: 32}).withMessage("designation tres long"), 
+    check('designation').notEmpty().withMessage("la designation de produit est obligatoire").trim().isLength({max: 32}).withMessage("designation tres long"), 
     check('qte').notEmpty().withMessage('la quantite est obligatoire').isNumeric().withMessage('la quantite est un nombre'),
     check('prix').notEmpty().withMessage('le prix est obligatoire').isNumeric().withMessage('le prix est un nombre'), 
     check('imageCover').notEmpty().withMessage('image de produit est obligatoire'),
@@ -18,7 +18,7 @@ const addProductValidator = [
 const updateProductValidator = [
     check('id').isMongoId().withMessage("Id produit invalide"),
     check('qte').notEmpty().withMessage('la quantite est obligatoire').isNumeric().withMessage('la quantite est un nombre'),
-    check('designation').notEmpty().withMessage("la designation de produit est obligatoire").isLength({max: 32}).withMessage("designation tres long"), 
+    check('designation').notEmpty().withMessage("la designation de produit est obligatoire").trim().isLength({max: 32}).withMessage("designation tres long"), 
     check('prix').notEmpty().withMessage('le prix est obligatoire').isNumeric().withMessage('le prix est un nombre'), 
     check('imageCover').notEmpty().withMessage('image de produit est obligatoire'),
     check('category').notEmpty().withMessage('categorie obligatoire').isMongoId().withMessage("Id categorie invalide"),

@@ -13,11 +13,11 @@ const get = (model: Model<any>) => async (req: express.Request, res: express.Res
 }
 
 const update = (model: Model<any>) => async (req: express.Request, res: express.Response) => {
-    let document = await model.findById(req.params.id)
+    const document = await model.findById(req.params.id)
     if (!document)
         return res.status(StatusCodes.NOT_FOUND).json(`no ${model.modelName}`) //kayna 7aja hna ta3 l error api makemlthach
-    document = req.body
-    await document.save()
+    Object.assign(document, req.body)
+    document.save()
     return res.status(StatusCodes.OK).json(`${model.modelName} modifiée`)
 }
 
