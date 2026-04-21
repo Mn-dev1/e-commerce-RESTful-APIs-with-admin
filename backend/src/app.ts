@@ -13,6 +13,7 @@ import productRouter from './routes/product.routes.js'
 import categoryRouter from './routes/category.routes.js'
 import adminRouter from './routes/admin.routes.js'
 import authRouter from './routes/auth.routes.js'
+import clientRouter from './routes/client.routes.js'
 
 
 const app = express() 
@@ -35,6 +36,7 @@ app.use('/api/v1/categories', categoryRouter) //route ghir l admin li yo5rojlou 
 app.use('/api/v1/products', productRouter)
 app.use('/api/v1/admins', adminRouter)
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/', clientRouter)
 
 
 app.all('*splat', (req, res, next) => {

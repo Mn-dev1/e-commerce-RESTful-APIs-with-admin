@@ -1,6 +1,6 @@
 import { Schema, model} from 'mongoose'
 import validator from "email-validator"
-import { Role } from "../utils/roles.js"
+import { Role } from "../utils/enums.js"
 import {compare, hash, genSalt} from "bcrypt"
 import jwt from 'jsonwebtoken'
 import type { StringValue } from 'ms';

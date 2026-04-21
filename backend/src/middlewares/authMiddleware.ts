@@ -3,7 +3,7 @@ dotenv.config()
 import express from "express"
 import jwt from "jsonwebtoken"
 import { StatusCodes } from "http-status-codes"
-import { Role } from '../utils/roles.js'
+import { Role } from '../utils/enums.js'
 import refreshTokens from "../models/refresh.Token.js"
 
 const authenticate = (req: express.Request, res: express.Response, next: express.NextFunction) => {

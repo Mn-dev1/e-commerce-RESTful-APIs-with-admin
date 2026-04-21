@@ -8,7 +8,7 @@ dotenv.config()
 import type { StringValue } from 'ms';
 
 const register = async (req: express.Request, res: express.Response) => {
-    const admin = Admin.create({
+    await Admin.create({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,

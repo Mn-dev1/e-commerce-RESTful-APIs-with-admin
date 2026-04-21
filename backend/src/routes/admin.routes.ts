@@ -5,14 +5,14 @@ import {updateAdminValidator, deleteAdminValidator } from "../utils/validators/a
 import registerValidator from "../utils/validators/authValidators.js"
 import {register} from "../controllers/auth.controller.js"
 import {authenticate, authorize} from "../middlewares/authMiddleware.js"
-import {Role} from '../utils/roles.js'
+import {Role} from '../utils/enums.js'
 
 const adminRouter = express.Router()
 
 adminRouter.route('/').get(authenticate, authorize(Role.SUPER_ADMIN), getAdmins)
 adminRouter.route('/register').post(authenticate, authorize(Role.SUPER_ADMIN),registerValidator, register)
 adminRouter.route('/:id').delete(authenticate, authorize(Role.SUPER_ADMIN), deleteAdminValidator, deleteAdmin)
-adminRouter.route('/info/:id').put(authenticate, authorize(Role.ADMIN, Role.SUPER_ADMIN), updateAdminValidator, updateAdmin)
+adminRouter.route('/info/:id').put(authenticate, updateAdminValidator, updateAdmin)
 adminRouter.route('/products').get(authenticate, getAllProducts)
 
 

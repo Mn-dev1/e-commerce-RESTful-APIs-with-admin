@@ -2,7 +2,7 @@ import express from 'express'
 import {getCategories, addCategory, updateCategory, deleteCategory} from '../controllers/category.controller.js'
 import {addCategoryValidator, updateCategoryValidator, deleteCategoryValidator}  from '../utils/validators/categoryValidator.js'
 import { authenticate, authorize } from '../middlewares/authMiddleware.js'
-import { Role } from '../utils/roles.js'
+import { Role } from '../utils/enums.js'
 
 
 const categoryRouter = express.Router()

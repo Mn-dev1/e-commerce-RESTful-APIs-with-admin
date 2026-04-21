@@ -2,7 +2,7 @@ import express from 'express'
 import { addProduct, deleteProduct, getAllProducts, updateProduct} from '../controllers/product.controller.js'
 import { addProductValidator, deleteProductValidator, updateProductValidator } from '../utils/validators/productValidator.js'
 import {authenticate, authorize} from "../middlewares/authMiddleware.js"
-import { Role } from '../utils/roles.js'
+import { Role } from '../utils/enums.js'
 
 const productRouter = express.Router()
 

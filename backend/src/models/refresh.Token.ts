@@ -3,8 +3,7 @@ import {Schema, model} from 'mongoose'
 const refreshTokenSchema = new Schema({
     userId:{
         type: Schema.Types.ObjectId,
-        ref: 'Admin',
-        unique: false
+        ref: 'Admin'
     },
     token: {
         type: Schema.Types.String,
