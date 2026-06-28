@@ -14,5 +14,7 @@ export enum EtatCommande {
   ANNULEE = 'Annulée',
   CONFIRMEE = 'Confirmée',
   LIVREE = 'Livrée',
-  RETOURNEE = 'Retournée'
+  RETOURNEE = 'Retournée',
+  EN_ATTENTE = 'En attente',
+  ECHANGE = 'Échange'
 }

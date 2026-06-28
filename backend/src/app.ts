@@ -9,12 +9,7 @@ import morgan from 'morgan'
 import errorHandlerMiddleware from './middlewares/error-handler.js'
 import connectDB from './db/connect.js'
 import CustomError from './errors/CustomError.js'
-import productRouter from './routes/product.routes.js'
-import categoryRouter from './routes/category.routes.js'
-import adminRouter from './routes/admin.routes.js'
-import authRouter from './routes/auth.routes.js'
-import clientRouter from './routes/client.routes.js'
-
+import mountRoutes from './routes/index.js'
 
 const app = express() 
 
@@ -31,14 +26,8 @@ if(process.env.NODE_ENV === 'development') // w kayen staging mode ki tala3 code
     app.use(morgan('dev'))
     
 app.use(cookieParser())
-//mount routes
-app.use('/api/v1/categories', categoryRouter) //route ghir l admin li yo5rojlou + client fel home yorjoulou les categories li kaynin
-app.use('/api/v1/products', productRouter)
-app.use('/api/v1/admins', adminRouter)
-app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/', clientRouter)
 
-
+mountRoutes(app)
 app.all('*splat', (req, res, next) => {
     next(new CustomError(`route ${req.url} not found`, 404))
 })

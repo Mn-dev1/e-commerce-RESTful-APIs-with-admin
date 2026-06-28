@@ -6,8 +6,7 @@ import {Role} from '../utils/enums.js'
 
 const clientRouter = express.Router()
 
-clientRouter.route('/paiment').post(addClientValidator, addClient)
-
-clientRouter.route('/clients').get(authenticate, authorize(Role.SUPER_ADMIN, Role.ADMIN), getClients)
+clientRouter.route('/').get(authenticate, authorize(Role.SUPER_ADMIN, Role.ADMIN), getClients)
+                       .post(addClientValidator, addClient)
 
 export default clientRouter

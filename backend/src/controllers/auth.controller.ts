@@ -98,7 +98,7 @@ const refresh = async (req: express.Request, res: express.Response) => {
 const logout = async (req: express.Request, res: express.Response) => {
     res.clearCookie('refreshToken', { path: '/api/v1/auth/refresh' });
     await refreshTokens.deleteOne({ userId: req.user.userId })
-    return res.sendStatus(StatusCodes.NO_CONTENT);
+    return res.redirect('/api/v1/');
 }
 
 export { register, login, refresh, logout }

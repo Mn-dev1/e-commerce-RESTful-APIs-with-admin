@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { Wilaya } from '../utils/enums.js'
+import validator from "email-validator"
 
 const clientSchema = new Schema({
     nom: {
@@ -15,27 +15,16 @@ const clientSchema = new Schema({
         trim: true,
         length: 10,
     },
-    adresse: {
-        type: Schema.Types.String,
-        required: [true, "l'adresse est obligatoire"],
-        trim: true,
-        maxlength: 40,
-        minlength: 2,
-    },
-    commune: {
-        type: Schema.Types.String,
-        trim: true,
-        required: [true, "la commune est obligatoire"]
-    },
-    wilaya: {
-        type: Schema.Types.String,
-        enum: Wilaya,
-        required: [true, "la wilaya est obligatoire"]
-    },
-    notes: {
-        type: Schema.Types.String,
-        maxlength: 100,
-    }
+    email: {
+            type: Schema.Types.String,
+            trim: true,
+            validate: {
+                validator: validator.validate,
+                message: "Format d'email invalide"
+            },
+            unique: [true, "ce email existe déjà"],
+            maxlength: 255
+        }
     
 }, {timestamps: true})
 

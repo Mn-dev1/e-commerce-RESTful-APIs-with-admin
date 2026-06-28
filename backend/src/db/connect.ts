@@ -6,7 +6,6 @@ const connectDB = async (uri: string) => {
         console.log('MongoDB connected ...');
     } catch (error) {
         throw new Error(error instanceof Error ? error.message : 'Unknown error')
-        
     }
 }
 export default connectDB
