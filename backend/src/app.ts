@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 // import compression from 'compression'
 // import cors from 'cors'
-import morgan from 'morgan'
+//import morgan from 'morgan'
 import errorHandlerMiddleware from './middlewares/error-handler.js'
 import connectDB from './db/connect.js'
 import CustomError from './errors/CustomError.js'
@@ -22,8 +22,8 @@ app.use(express.json())
 // app.use(cookieParser())
 app.use(bodyParser.json())
 
-if(process.env.NODE_ENV === 'development') // w kayen staging mode ki tala3 code f charika w wa7ed okhor ya5dem 3lih
-    app.use(morgan('dev'))
+// if(process.env.NODE_ENV === 'development') // w kayen staging mode ki tala3 code f charika w wa7ed okhor ya5dem 3lih
+//     app.use(morgan('dev'))
     
 app.use(cookieParser())
 
